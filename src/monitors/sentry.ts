@@ -14,7 +14,24 @@ import {
   setUser as setSentryUser,
 } from '@sentry/browser'
 
+const isValidSentryDsn = (dsn?: string): dsn is string => {
+  if (!dsn) return false
+
+  try {
+    const url = new URL(dsn)
+    const pathParts = url.pathname.split('/').filter(Boolean)
+
+    return Boolean(url.protocol && url.host && url.username && pathParts.at(-1))
+  } catch (_error) {
+    return false
+  }
+}
+
 export const init = (options?: InitializationOptions) => {
+  const dsn = process.env.SENTRY_DSN
+
+  if (!isValidSentryDsn(dsn)) return
+
   const integrations = [
     captureConsoleIntegration({ levels: ['error'], handled: true }),
   ]
@@ -23,7 +40,7 @@ export const init = (options?: InitializationOptions) => {
     integrations.push(consoleLoggingIntegration({ levels: ['error'] }))
 
   SentryInit({
-    dsn: process.env.SENTRY_DSN,
+    dsn,
     skipBrowserExtensionCheck: true,
     debug: !isProduction,
     tracesSampleRate: isProduction ? 0.3 : 0.8,
@@ -47,7 +64,7 @@ export const init = (options?: InitializationOptions) => {
   const userProvider = options?.providers?.user
   if (userProvider) {
     userProvider().then(user => {
-      if (user) setSentryUser(user)
+      if (user) setUser(user)
     })
   }
 }

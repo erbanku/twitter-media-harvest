@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Fix disable button of `Conflict Extensions` when there is no extension to disable
 - Fix width of side-menu in options page when user is in narrow screen.
 
+## [4.5.3] - 2026-03-18
+
+### Fixed
+
+- Skip Sentry initialization when `SENTRY_DSN` is missing or invalid.
+
 ## [4.5.2] - 2025-12-21
 
 ### Changed
